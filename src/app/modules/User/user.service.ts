@@ -1,0 +1,28 @@
+import { PrismaClient, UserRole } from "../../../generated/prisma";
+
+const prisma = new PrismaClient();
+const createAdmin = async (data: any) => {
+    const userData = {
+        email: data.admin.email,
+        password: data.password,
+        role: UserRole.ADMIN
+    }
+
+    const result = await prisma.$transaction(async(transectionClient) => {
+        const createdUserData = await transectionClient.user.create({
+            data: userData
+        });
+
+        const createdAdminData = await transectionClient.admin.create({
+            data: data.admin
+        });
+
+        return createdAdminData;
+    })
+
+    return result;
+};
+
+export const userService = {
+    createAdmin
+}
